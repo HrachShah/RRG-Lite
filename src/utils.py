@@ -9,10 +9,11 @@ from pathlib import Path
 def load_config():
     config_path = Path(__file__).parent / "user.json"
 
-    if "-c" in sys.argv or "--config" in sys.argv:
-        idx = sys.argv.index("-c" if "-c" in sys.argv else "--config") + 1
-
-        config_path = Path(sys.argv[idx]).expanduser().resolve()
+    config_flag = "-c" if "-c" in sys.argv else "--config" if "--config" in sys.argv else None
+    if config_flag:
+        flag_idx = sys.argv.index(config_flag)
+        if flag_idx + 1 < len(sys.argv):
+            config_path = Path(sys.argv[flag_idx + 1]).expanduser().resolve()
 
     if config_path.exists():
         return json.loads(config_path.read_bytes())
