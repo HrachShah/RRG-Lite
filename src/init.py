@@ -4,6 +4,11 @@ from pathlib import Path
 import utils
 from RRG import RRG, version
 
+if "--help" in sys.argv or "-h" in sys.argv:
+    # Let argparse handle help; short-circuit config checks so help always works
+    args = utils.parse_cli_options()
+    sys.exit(0)
+
 if "-v" in sys.argv or "--version" in sys.argv:
     exit(
         f"""

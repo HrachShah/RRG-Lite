@@ -378,7 +378,11 @@ marker, and label
         """
 
         if self.base_date:
-            base_rs = rs_ratio.at[self.base_date]
+            if self.base_date in rs_ratio.index:
+                base_rs = rs_ratio.at[self.base_date]
+            else:
+                # Fall back to latest available date if BASE_DATE is not in the dataset
+                base_rs = rs_ratio.iloc[-self.period]
         else:
             base_rs = rs_ratio.iloc[-self.period]
 
