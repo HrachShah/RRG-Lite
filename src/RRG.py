@@ -378,9 +378,16 @@ marker, and label
         """
 
         if self.base_date:
-            base_rs = rs_ratio.at[self.base_date]
+            try:
+                base_rs = rs_ratio.at[self.base_date]
+            except KeyError:
+                base_rs = rs_ratio.iloc[-self.period]
         else:
             base_rs = rs_ratio.iloc[-self.period]
+
+        # Guard against series shorter than the requested period
+        if len(rs_ratio) < self.period:
+            base_rs = rs_ratio.iloc[-1]
 
         # Rate of change (ROC)
         rs_roc = ((rs_ratio / base_rs) - 1) * 100
