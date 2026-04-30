@@ -344,7 +344,7 @@ marker, and label
         """
         A function to format the coordinate string
         """
-        return f"RS: {x:.2f}     MOM: {y:.2f}"
+        return "RS: %s     MOM: %s" % (f"{x:.2f}", f"{y:.2f}")
 
     @staticmethod
     def _get_color(x, y):
