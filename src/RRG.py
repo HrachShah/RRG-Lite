@@ -378,8 +378,18 @@ marker, and label
         """
 
         if self.base_date:
+            if self.base_date not in rs_ratio.index:
+                raise ValueError(
+                    f"Base date {self.base_date:%Y-%m-%d} not found in data. "
+                    f"Available range: {rs_ratio.index[0]:%Y-%m-%d} – {rs_ratio.index[-1]:%Y-%m-%d}"
+                )
             base_rs = rs_ratio.at[self.base_date]
         else:
+            if len(rs_ratio) < self.period:
+                raise ValueError(
+                    f"Not enough data for momentum calculation: got {len(rs_ratio)} rows, "
+                    f"need at least {self.period}"
+                )
             base_rs = rs_ratio.iloc[-self.period]
 
         # Rate of change (ROC)
