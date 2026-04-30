@@ -147,16 +147,10 @@ class EODFileLoader(AbstractLoader):
         """Given a date returns the date for Saturday"""
 
         weekday = date.weekday()
-
-        if weekday == 5:
-            # saturday
-            return date
-
-        remaining_days = 5 - weekday
-
-        if remaining_days == -1:
-            # its a sunday
-            remaining_days += 7
+        # Saturday is the target weekday (5). Use modulo to wrap around.
+        # For Saturday (5), (5-5) % 7 = 0 → timedelta(0) → same day.
+        # For other days, this correctly computes days until next Saturday.
+        remaining_days = (5 - weekday) % 7
 
         return date + timedelta(remaining_days)
 
