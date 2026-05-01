@@ -550,12 +550,7 @@ marker, and label
                 self.tabbable = False
 
         # toggle visibility of tail lines
-        if self.line_alpha_state == self.line_alpha:
-            # If lines are visible, set the alpha to 1,
-            # else set to default visibility.
-            line.set_alpha(line._alpha == self.line_alpha or self.line_alpha)
-        else:
-            line.set_alpha(line._alpha == 0 or 0)
+        line.set_alpha(0 if line._alpha > 0 else self.line_alpha)
 
         if self.text_alpha_state == self.text_alpha:
             # If text labels are visible, set the alpha to 1,
