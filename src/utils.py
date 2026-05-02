@@ -15,7 +15,10 @@ def load_config():
         config_path = Path(sys.argv[idx]).expanduser().resolve()
 
     if config_path.exists():
-        return json.loads(config_path.read_bytes())
+        try:
+            return json.loads(config_path.read_bytes())
+        except (json.JSONDecodeError, OSError) as exc:
+            raise SystemExit(f"Failed to parse config file {config_path}: {exc}")
 
 
 def get_loader_class(config):
