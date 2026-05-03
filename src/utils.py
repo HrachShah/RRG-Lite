@@ -25,7 +25,10 @@ def get_loader_class(config):
     # Load data loader from config. Default loader is EODFileLoader
     loader_name = config.get("LOADER", "EODFileLoader")
 
-    loader_module = importlib.import_module(f"loaders.{loader_name}")
+    try:
+        loader_module = importlib.import_module(f"loaders.{loader_name}")
+    except ModuleNotFoundError as e:
+        raise SystemExit(f"Loader '{loader_name}' not found in loaders/ directory.\n{e}") from None
 
     return getattr(loader_module, loader_name)
 
