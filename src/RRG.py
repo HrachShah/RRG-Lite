@@ -378,6 +378,13 @@ marker, and label
         """
 
         if self.base_date:
+            if self.base_date not in rs_ratio.index:
+                available = rs_ratio.index[[0, -1]].tolist()
+                raise KeyError(
+                    f"base_date '{self.base_date}' not found in RS ratio data. "
+                    f"Available dates range from {available[0]} to {available[1]}. "
+                    f"Check your BASE_DATE in the config file."
+                )
             base_rs = rs_ratio.at[self.base_date]
         else:
             base_rs = rs_ratio.iloc[-self.period]
