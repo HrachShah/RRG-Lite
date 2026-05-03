@@ -108,7 +108,7 @@ class EODFileLoader(AbstractLoader):
                 chunk_size=self.chunk_size,
                 date_format=self.date_format,
             )
-        except IndexError:
+        except (IndexError, pd.errors.ParserError):
             return
         except Exception as e:
             # Any other error log it with the symbol name
@@ -157,7 +157,7 @@ class EODFileLoader(AbstractLoader):
         return date + timedelta(remaining_days)
 
     def last_day_month(self, date: datetime) -> datetime:
-        """Given a date returns the date for last day of month"""
+        """Given a date, return the last day of that month."""
 
         month = date.month + 1
         year = date.year
