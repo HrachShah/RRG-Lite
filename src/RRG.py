@@ -364,8 +364,15 @@ marker, and label
         rs = (stock_df / benchmark_df) * 100
 
         rs_sma = rs.rolling(window=self.window)
-
-        return ((rs - rs_sma.mean()) / rs_sma.std(ddof=1)).dropna() + 100
+        result = ((rs - rs_sma.mean()) / rs_sma.std(ddof=1)).dropna() + 100
+        if result.isna().all():
+            raise ValueError(
+                f"RS calculation produced all-NaN values. This can occur when "
+                f"benchmark data has duplicate or non-monotonic dates "
+                f"(got {len(benchmark_df)} rows for benchmark, {len(stock_df)} for stock). "
+                f"Ensure data is sorted and deduplicated."
+            )
+        return result
 
     def _calculate_momentum(self, rs_ratio: pd.Series) -> pd.Series:
         """
