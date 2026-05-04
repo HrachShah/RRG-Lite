@@ -550,21 +550,15 @@ marker, and label
                 self.tabbable = False
 
         # toggle visibility of tail lines
-        if self.line_alpha_state == self.line_alpha:
-            # If lines are visible, set the alpha to 1,
-            # else set to default visibility.
-            line.set_alpha(line._alpha == self.line_alpha or self.line_alpha)
+        if line._alpha > 0:
+            line.set_alpha(0)
         else:
-            line.set_alpha(line._alpha == 0 or 0)
+            line.set_alpha(self.line_alpha)
 
-        if self.text_alpha_state == self.text_alpha:
-            # If text labels are visible, set the alpha to 1,
-            # else set to default visibility
-            annotation.set_alpha(
-                annotation._alpha == self.text_alpha or self.text_alpha
-            )
+        if annotation._alpha > 0:
+            annotation.set_alpha(0)
         else:
-            annotation.set_alpha(annotation._alpha == 0 or 0)
+            annotation.set_alpha(self.text_alpha)
 
         self.fig.canvas.draw_idle()
 
