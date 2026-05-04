@@ -378,6 +378,11 @@ marker, and label
         """
 
         if self.base_date:
+            if self.base_date not in rs_ratio.index:
+                raise KeyError(
+                    f"base_date '{self.base_date}' is not in the loaded data range. "
+                    f"Check that the date is within the available symbol data."
+                )
             base_rs = rs_ratio.at[self.base_date]
         else:
             base_rs = rs_ratio.iloc[-self.period]
