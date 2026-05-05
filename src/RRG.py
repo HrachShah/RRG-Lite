@@ -377,10 +377,18 @@ marker, and label
         - Add 100 to serve as a base value
         """
 
+        if len(rs_ratio) < self.period:
+            raise ValueError(
+                f"Not enough data for momentum calculation: RS ratio has "
+                f"{len(rs_ratio)} rows but momentum calculation requires at least "
+                f"{self.period}. Check that your watchlist has sufficient data "
+                f"for the configured period."
+            )
+
         if self.base_date:
             if self.base_date not in rs_ratio.index:
-                raise KeyError(
-                    f"Base date {self.base_date} not found in RS ratio index. "
+                raise ValueError(
+                    f"Base date {self.base_date:%Y-%m-%d} not found in RS ratio index. "
                     f"Ensure BASE_DATE is within the loaded data range."
                 )
             base_rs = rs_ratio.at[self.base_date]
