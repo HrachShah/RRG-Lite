@@ -363,9 +363,21 @@ marker, and label
         """
         rs = (stock_df / benchmark_df) * 100
 
-        rs_sma = rs.rolling(window=self.window)
+        if (benchmark_df == 0).any():
+            raise ValueError(
+                "Benchmark data contains zero values. "
+                "Cannot compute RS ratio with a zero divisor."
+            )
 
-        return ((rs - rs_sma.mean()) / rs_sma.std(ddof=1)).dropna() + 100
+        rs_sma = rs.rolling(window=self.window)
+        rs_std = rs_sma.std(ddof=1)
+        if (rs_std == 0).all():
+            raise ValueError(
+                "RS standard deviation is zero across the rolling window. "
+                "Cannot normalise RS when all values are identical."
+            )
+
+        return ((rs - rs_sma.mean()) / rs_std).dropna() + 100
 
     def _calculate_momentum(self, rs_ratio: pd.Series) -> pd.Series:
         """
