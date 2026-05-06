@@ -393,12 +393,25 @@ marker, and label
         else:
             base_rs = rs_ratio.iloc[-self.period]
 
+        if base_rs == 0:
+            raise ValueError(
+                f"base_rs is zero (RS ratio at base date is 0). "
+                f"Cannot compute ROC with a zero denominator."
+            )
+
         # Rate of change (ROC)
         rs_roc = ((rs_ratio / base_rs) - 1) * 100
 
         roc_sma = rs_roc.rolling(window=self.window)
 
-        return ((rs_roc - roc_sma.mean()) / roc_sma.std(ddof=1)).dropna() + 100
+        roc_std = roc_sma.std(ddof=1)
+        if (roc_std == 0).all():
+            raise ValueError(
+                f"ROC standard deviation is zero across the rolling window. "
+                f"Cannot normalise momentum when all ROC values are identical."
+            )
+
+        return ((rs_roc - roc_sma.mean()) / roc_std).dropna() + 100
 
     def _clear_all(self, key):
         """
