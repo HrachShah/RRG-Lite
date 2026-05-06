@@ -377,7 +377,18 @@ marker, and label
         - Add 100 to serve as a base value
         """
 
+        if len(rs_ratio) < self.period:
+            raise ValueError(
+                f"rs_ratio has only {len(rs_ratio)} data points but {self.period} "
+                f"are required (period={self.period}). Supply more historical data."
+            )
+
         if self.base_date:
+            if self.base_date not in rs_ratio.index:
+                raise ValueError(
+                    f"base_date '{self.base_date}' is not in the loaded data range. "
+                    f"Check that the date is within the available symbol data."
+                )
             base_rs = rs_ratio.at[self.base_date]
         else:
             base_rs = rs_ratio.iloc[-self.period]
