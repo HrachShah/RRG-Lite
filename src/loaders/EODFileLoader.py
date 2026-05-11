@@ -125,12 +125,16 @@ class EODFileLoader(AbstractLoader):
         return df
 
     def process_monthly(self, file, end_date) -> pd.DataFrame:
-        df = pd.read_csv(
-            file,
-            index_col="Date",
-            parse_dates=["Date"],
-            date_format=self.date_format,
-        )
+        try:
+            df = pd.read_csv(
+                file,
+                index_col="Date",
+                parse_dates=["Date"],
+                date_format=self.date_format,
+            )
+        except (OSError, ValueError) as e:
+            logger.warning(f"{file}: Error reading CSV file - {e!r}")
+            return pd.DataFrame()
 
         if end_date:
             df = df.loc[:end_date].iloc[-self.period :]
@@ -140,7 +144,6 @@ class EODFileLoader(AbstractLoader):
         df = df.resample(self.offset_str).agg(self.ohlc_dict).dropna()
 
         assert isinstance(df, pd.DataFrame)
-
         return df
 
     def last_day_week(self, date: datetime) -> datetime:
