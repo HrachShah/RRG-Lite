@@ -310,8 +310,6 @@ marker, and label
                     window_manager.window.state("zoomed")
                 except AttributeError:
                     window_manager.full_screen_toggle()
-            else:
-                window_manager.full_screen_toggle()
 
         self.axs = axs
 
