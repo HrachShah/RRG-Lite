@@ -332,9 +332,13 @@ marker, and label
     @staticmethod
     def _get_smooth_curve(x, y):
         # Interpolate a smooth curve through the scatter points
-        tck, _ = interpolate.splprep([x, y], s=0, k=2)  # s=0 for no smoothing
-        t = np.linspace(0, 1, 100)  # Parameter values
-        line_x, line_y = interpolate.splev(t, tck)  # Evaluate spline
+        try:
+            tck, _ = interpolate.splprep([x, y], s=0, k=2)  # s=0 for no smoothing
+            t = np.linspace(0, 1, 100)  # Parameter values
+            line_x, line_y = interpolate.splev(t, tck)  # Evaluate spline
+        except AttributeError:
+            # interpolate.splprep/splev unavailable — return linear fallback
+            line_x, line_y = np.array(x), np.array(y)
         return line_x, line_y
 
     @staticmethod
