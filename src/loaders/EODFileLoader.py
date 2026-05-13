@@ -110,8 +110,10 @@ class EODFileLoader(AbstractLoader):
             )
         except IndexError:
             return
-        except Exception as e:
-            # Any other error log it with the symbol name
+        except (OSError, ValueError) as e:
+            # csv_loader reads files (raises OSError) and parses CSV (raises
+            # ValueError for malformed data) — log the symbol so the user can
+            # identify the problematic file
             logger.warning(f"{symbol}: Error loading file - {e!r}")
             return
 
