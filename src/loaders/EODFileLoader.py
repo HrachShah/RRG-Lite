@@ -108,9 +108,7 @@ class EODFileLoader(AbstractLoader):
                 chunk_size=self.chunk_size,
                 date_format=self.date_format,
             )
-        except IndexError:
-            return
-        except Exception as e:
+        except (ValueError, TypeError, OSError) as e:
             # Any other error log it with the symbol name
             logger.warning(f"{symbol}: Error loading file - {e!r}")
             return
