@@ -38,8 +38,8 @@ class RRG:
                 "No benchmark index set. Use `-b` or specify `BENCHMARK` in config."
             )
 
-        # Tail count set to minimum 2
-        self.tail_count = max(2, tail_count)
+        # Tail count set to minimum 3
+        self.tail_count = max(3, tail_count)
 
         self.window = config.get("WINDOW", 14)
         self.period = config.get("PERIOD", 52)
