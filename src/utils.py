@@ -13,9 +13,12 @@ def load_config():
         idx = sys.argv.index("-c" if "-c" in sys.argv else "--config") + 1
 
         config_path = Path(sys.argv[idx]).expanduser().resolve()
-
     if config_path.exists():
-        return json.loads(config_path.read_bytes())
+        try:
+            return json.loads(config_path.read_bytes())
+        except json.JSONDecodeError as e:
+            raise SystemExit(f"Configuration file contains invalid JSON at line {e.lineno}, column {e.colno}: {e.msg}")
+    return None
 
 
 def get_loader_class(config):
