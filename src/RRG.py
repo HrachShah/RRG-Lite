@@ -364,8 +364,12 @@ marker, and label
         rs = (stock_df / benchmark_df) * 100
 
         rs_sma = rs.rolling(window=self.window)
+        rs_std = rs_sma.std(ddof=1)
 
-        return ((rs - rs_sma.mean()) / rs_sma.std(ddof=1)).dropna() + 100
+        rs_std = rs_std.replace(0, float("nan"))
+        result = ((rs - rs_sma.mean()) / rs_std).dropna() + 100
+
+        return result
 
     def _calculate_momentum(self, rs_ratio: pd.Series) -> pd.Series:
         """
