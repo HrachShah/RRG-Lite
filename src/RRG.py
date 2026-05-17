@@ -542,10 +542,8 @@ marker, and label
             markers.set_alpha(1)
             self.highlighted_count += 1
             self.tabbable = True
-        else:
-            markers.set_alpha(0)
+        elif self.highlighted_count > 0:
             self.highlighted_count -= 1
-
             if self.highlighted_count == 0:
                 self.tabbable = False
 
