@@ -542,7 +542,7 @@ marker, and label
             markers.set_alpha(1)
             self.highlighted_count += 1
             self.tabbable = True
-        else:
+        elif markers._alpha != 0:
             markers.set_alpha(0)
             self.highlighted_count -= 1
 
