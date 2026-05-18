@@ -162,10 +162,8 @@ class EODFileLoader(AbstractLoader):
 
     def last_day_month(self, date: datetime) -> datetime:
         """Given a date returns the date for last day of month"""
-
+        year = date.year + (1 if date.month == 12 else 0)
         month = date.month % 12 + 1
-        year = date.year + (1 if month == 1 else 0)
-
         return datetime(year, month, 1) - timedelta(1)
 
     def close(self):
