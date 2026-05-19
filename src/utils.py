@@ -25,12 +25,12 @@ def get_loader_class(config):
     try:
         loader_module = importlib.import_module(f"loaders.{loader_name}")
     except ModuleNotFoundError:
-        raise SystemExit(1, f"Loader not found: loaders.{loader_name}") from None
+        raise SystemExit(f"Loader not found: loaders.{loader_name}") from None
 
     try:
         return getattr(loader_module, loader_name)
     except AttributeError:
-        raise SystemExit(1, f"Loader class '{loader_name}' not found in loaders.{loader_name}") from None
+        raise SystemExit(f"Loader class '{loader_name}' not found in loaders.{loader_name}") from None
 
 
 def parse_cli_options():
