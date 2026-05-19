@@ -20,7 +20,8 @@ if "-v" in sys.argv or "--version" in sys.argv:
     )
 
 
-config = utils.load_config()
+args = utils.parse_cli_options()
+config = utils.load_config(args)
 
 if not config:
     exit("Configuration file is missing.")
@@ -38,8 +39,6 @@ if watchlist_file and not (
     "-f" in sys.argv or "--file" in sys.argv or "--sym" in sys.argv
 ):
     sys.argv.extend(("-f", watchlist_file))
-
-args = utils.parse_cli_options()
 
 loader_class = utils.get_loader_class(config)
 

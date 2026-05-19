@@ -1,21 +1,20 @@
 import importlib
 import json
 import sys
-from argparse import ArgumentParser
+from argparse import Namespace
 from datetime import datetime
 from pathlib import Path
 
 
-def load_config():
+def load_config(args: Namespace) -> dict:
     config_path = Path(__file__).parent / "user.json"
 
-    if "-c" in sys.argv or "--config" in sys.argv:
-        idx = sys.argv.index("-c" if "-c" in sys.argv else "--config") + 1
-
-        config_path = Path(sys.argv[idx]).expanduser().resolve()
+    if getattr(args, "config", None):
+        config_path = Path(args.config).expanduser().resolve()
 
     if config_path.exists():
         return json.loads(config_path.read_bytes())
+    return {}
 
 
 def get_loader_class(config):
@@ -25,12 +24,12 @@ def get_loader_class(config):
     try:
         loader_module = importlib.import_module(f"loaders.{loader_name}")
     except ModuleNotFoundError:
-        raise SystemExit(f"Loader not found: loaders.{loader_name}") from None
+        raise SystemExit(f"Loader not found: loaders.{loader_name}")
 
     try:
         return getattr(loader_module, loader_name)
     except AttributeError:
-        raise SystemExit(f"Loader class '{loader_name}' not found in loaders.{loader_name}") from None
+        raise SystemExit(f"Loader class '{loader_name}' not found in loaders.{loader_name}")
 
 
 def parse_cli_options():
