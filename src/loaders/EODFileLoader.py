@@ -116,32 +116,30 @@ class EODFileLoader(AbstractLoader):
             return
 
         if self.tf == self.default_tf or df.empty:
-            return df
+            return df if isinstance(df, pd.DataFrame) else None
 
-        df = df.resample(self.offset_str, label="left").agg(self.ohlc_dict).dropna()
+        resampled = df.resample(self.offset_str, label="left").agg(self.ohlc_dict).dropna()
+        return resampled if isinstance(resampled, pd.DataFrame) else None
 
-        assert isinstance(df, pd.DataFrame)
-
-        return df
-
-    def process_monthly(self, file, end_date) -> pd.DataFrame:
-        df = pd.read_csv(
-            file,
-            index_col="Date",
-            parse_dates=["Date"],
-            date_format=self.date_format,
-        )
+    def process_monthly(self, file, end_date) -> Optional[pd.DataFrame]:
+        try:
+            df = pd.read_csv(
+                file,
+                index_col="Date",
+                parse_dates=["Date"],
+                date_format=self.date_format,
+            )
+        except (ValueError, OSError) as e:
+            logger.warning("failed to read CSV %s: %s", file, e)
+            return None
 
         if end_date:
             df = df.loc[:end_date].iloc[-self.period :]
         else:
             df = df.iloc[-self.period :]
 
-        df = df.resample(self.offset_str).agg(self.ohlc_dict).dropna()
-
-        assert isinstance(df, pd.DataFrame)
-
-        return df
+        resampled = df.resample(self.offset_str).agg(self.ohlc_dict).dropna()
+        return resampled if isinstance(resampled, pd.DataFrame) else None
 
     def last_day_week(self, date: datetime) -> datetime:
         """Given a date returns the date for Saturday"""
