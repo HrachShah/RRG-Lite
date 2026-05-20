@@ -25,9 +25,15 @@ def get_loader_class(config):
     # Load data loader from config. Default loader is EODFileLoader
     loader_name = config.get("LOADER", "EODFileLoader")
 
-    loader_module = importlib.import_module(f"loaders.{loader_name}")
+    try:
+        loader_module = importlib.import_module(f"loaders.{loader_name}")
+    except ModuleNotFoundError:
+        raise SystemExit(f"Loader '{loader_name}' not found — check that 'loaders/{loader_name}.py' exists and the LOADER key in your config matches exactly")
 
-    return getattr(loader_module, loader_name)
+    loader_class = getattr(loader_module, loader_name, None)
+    if loader_class is None:
+        raise SystemExit(f"Loader '{loader_name}' does not define a class of that name in loaders/{loader_name}.py")
+    return loader_class
 
 
 def parse_cli_options():
