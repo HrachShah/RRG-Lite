@@ -15,7 +15,10 @@ def load_config():
         config_path = Path(sys.argv[idx]).expanduser().resolve()
 
     if config_path.exists():
-        return json.loads(config_path.read_bytes())
+        try:
+            return json.loads(config_path.read_bytes())
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse config file '{config_path}': {e}") from e
 
 
 def get_loader_class(config):
