@@ -92,7 +92,7 @@ class EODFileLoader(AbstractLoader):
         file = self.data_path / f"{symbol.lower()}.csv"
 
         if not file.exists():
-            logger.warning(f"File not found: {file}")
+            logger.warning(f"{symbol}: CSV file not found at {file}")
             return
 
         if self.tf == "monthly" or self.tf == "quarterly":
