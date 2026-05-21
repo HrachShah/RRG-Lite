@@ -124,20 +124,28 @@ class EODFileLoader(AbstractLoader):
 
         return df
 
-    def process_monthly(self, file, end_date) -> pd.DataFrame:
-        df = pd.read_csv(
-            file,
-            index_col="Date",
-            parse_dates=["Date"],
-            date_format=self.date_format,
-        )
+    def process_monthly(self, file, end_date) -> Optional[pd.DataFrame]:
+        try:
+            df = pd.read_csv(
+                file,
+                index_col="Date",
+                parse_dates=["Date"],
+                date_format=self.date_format,
+            )
+        except Exception as e:
+            logger.warning(f"Error reading CSV file {file}: {e!r}")
+            return None
 
-        if end_date:
-            df = df.loc[:end_date].iloc[-self.period :]
-        else:
-            df = df.iloc[-self.period :]
+        try:
+            if end_date:
+                df = df.loc[:end_date].iloc[-self.period :]
+            else:
+                df = df.iloc[-self.period :]
 
-        df = df.resample(self.offset_str).agg(self.ohlc_dict).dropna()
+            df = df.resample(self.offset_str).agg(self.ohlc_dict).dropna()
+        except Exception as e:
+            logger.warning(f"Error resampling data in {file}: {e!r}")
+            return None
 
         assert isinstance(df, pd.DataFrame)
 
