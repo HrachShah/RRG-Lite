@@ -110,7 +110,7 @@ class EODFileLoader(AbstractLoader):
             )
         except IndexError:
             return
-        except Exception as e:
+        except (pd.errors.ParserError, pd.errors.EmptyDataError, OSError) as e:
             # Any other error log it with the symbol name
             logger.warning(f"{symbol}: Error loading file - {e!r}")
             return
@@ -132,7 +132,7 @@ class EODFileLoader(AbstractLoader):
                 parse_dates=["Date"],
                 date_format=self.date_format,
             )
-        except Exception as e:
+        except (pd.errors.ParserError, pd.errors.EmptyDataError, OSError) as e:
             logger.warning(f"Error reading CSV file {file}: {e!r}")
             return None
 
@@ -143,7 +143,7 @@ class EODFileLoader(AbstractLoader):
                 df = df.iloc[-self.period :]
 
             df = df.resample(self.offset_str).agg(self.ohlc_dict).dropna()
-        except Exception as e:
+        except (IndexError, KeyError, TypeError, ValueError) as e:
             logger.warning(f"Error resampling data in {file}: {e!r}")
             return None
 
