@@ -364,8 +364,10 @@ marker, and label
         rs = (stock_df / benchmark_df) * 100
 
         rs_sma = rs.rolling(window=self.window)
+        rs_std = rs_sma.std(ddof=1)
+        rs_std = rs_std.replace(0, float("nan"))  # avoid division by zero
 
-        return ((rs - rs_sma.mean()) / rs_sma.std(ddof=1)).dropna() + 100
+        return ((rs - rs_sma.mean()) / rs_std).dropna() + 100
 
     def _calculate_momentum(self, rs_ratio: pd.Series) -> pd.Series:
         """
@@ -386,8 +388,10 @@ marker, and label
         rs_roc = ((rs_ratio / base_rs) - 1) * 100
 
         roc_sma = rs_roc.rolling(window=self.window)
+        roc_std = roc_sma.std(ddof=1)
+        roc_std = roc_std.replace(0, float("nan"))  # avoid division by zero
 
-        return ((rs_roc - roc_sma.mean()) / roc_sma.std(ddof=1)).dropna() + 100
+        return ((rs_roc - roc_sma.mean()) / roc_std).dropna() + 100
 
     def _clear_all(self, key):
         """
