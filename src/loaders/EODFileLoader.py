@@ -116,7 +116,13 @@ class EODFileLoader(AbstractLoader):
         if self.tf == self.default_tf or df.empty:
             return df
 
-        df = df.resample(self.offset_str, label="left").agg(self.ohlc_dict).dropna()
+        try:
+            df = df.resample(self.offset_str, label="left").agg(self.ohlc_dict).dropna()
+        except (ValueError, TypeError) as e:
+            # resample fails when the offset string is invalid or the
+            # dataframe index is incompatible with the frequency
+            logger.warning(f"{symbol}: resample error — {e!r}")
+            return None
 
         assert isinstance(df, pd.DataFrame)
 
