@@ -110,8 +110,10 @@ class EODFileLoader(AbstractLoader):
             )
         except IndexError:
             return
-        except Exception as e:
-            # Any other error log it with the symbol name
+        except (OSError, ValueError, pd.errors.ParserError) as e:
+            # csv_loader reads from disk (OSError for permission/unreadable),
+            # parses dates with pd.to_datetime (ValueError for malformed dates),
+            # and rehydrates CSV via pd.read_csv (ParserError for malformed rows)
             logger.warning(f"{symbol}: Error loading file - {e!r}")
             return
 
