@@ -14,8 +14,18 @@ def load_config():
 
         config_path = Path(sys.argv[idx]).expanduser().resolve()
 
-    if config_path.exists():
+    if not config_path.exists():
+        return None
+
+    try:
         return json.loads(config_path.read_bytes())
+    except (json.JSONDecodeError, OSError, UnicodeDecodeError) as e:
+        # Bad JSON, unreadable file, or non-utf8 bytes — surface a clear
+        # message naming the offending file rather than raising a bare
+        # exception type that swallows the real cause.
+        raise SystemExit(
+            f"Could not parse config at {config_path}: {e}"
+        ) from e
 
 
 def get_loader_class(config):
