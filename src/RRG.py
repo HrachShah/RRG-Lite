@@ -309,9 +309,23 @@ marker, and label
                     # Only works with tkAgg backend
                     window_manager.window.state("zoomed")
                 except AttributeError:
-                    window_manager.full_screen_toggle()
+                    # Backend doesn't expose a .window handle (e.g. QtAgg).
+                    # full_screen_toggle can still raise on backends that
+                    # don't implement it (e.g. GTK3 with no compositor),
+                    # so guard the call and keep going.
+                    try:
+                        window_manager.full_screen_toggle()
+                    except (AttributeError, RuntimeError):
+                        pass
             else:
-                window_manager.full_screen_toggle()
+                # full_screen_toggle is not implemented on every backend
+                # (e.g. MacOSX before recent matplotlib, headless WebAgg,
+                # GTK without compositor support). Failing to maximize the
+                # window should not prevent the chart from being shown.
+                try:
+                    window_manager.full_screen_toggle()
+                except (AttributeError, RuntimeError):
+                    pass
 
         self.axs = axs
 
