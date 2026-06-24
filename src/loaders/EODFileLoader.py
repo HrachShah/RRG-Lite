@@ -91,8 +91,21 @@ class EODFileLoader(AbstractLoader):
     def get(self, symbol: str) -> Optional[pd.DataFrame]:
         file = self.data_path / f"{symbol.lower()}.csv"
 
-        if not file.exists():
+        if not file.exists() and not file.is_symlink():
             logger.warning(f"File not found: {file}")
+            return
+
+        if file.is_symlink() and not file.resolve().exists():
+            logger.warning(f"Broken symlink: {file}")
+            return
+
+        try:
+            resolved = file.resolve()
+            if not resolved.exists():
+                logger.warning(f"File no longer exists after resolve: {resolved}")
+                return
+        except (OSError, RuntimeError) as e:
+            logger.warning(f"Cannot resolve file path for {symbol}: {e!r}")
             return
 
         if self.tf == "monthly" or self.tf == "quarterly":
