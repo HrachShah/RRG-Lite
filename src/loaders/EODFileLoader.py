@@ -110,7 +110,7 @@ class EODFileLoader(AbstractLoader):
             )
         except IndexError:
             return
-        except Exception as e:
+        except (OSError, ValueError) as e:
             # Any other error log it with the symbol name
             logger.warning(f"{symbol}: Error loading file - {e!r}")
             return
