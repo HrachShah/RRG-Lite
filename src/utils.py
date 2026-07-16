@@ -29,7 +29,13 @@ def load_config():
                 exit("Missing value for --config option.")
 
     if config_path.exists():
-        return json.loads(config_path.read_bytes())
+        try:
+            config = json.loads(config_path.read_bytes())
+        except (json.JSONDecodeError, OSError) as exc:
+            raise SystemExit(f"Failed to read config file {config_path}: {exc}")
+        if not isinstance(config, dict):
+            raise SystemExit(f"Config file {config_path} must contain a JSON object.")
+        return config
     return None
 
 
