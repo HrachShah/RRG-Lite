@@ -98,7 +98,11 @@ class EODFileLoader(AbstractLoader):
         if self.tf == "monthly" or self.tf == "quarterly":
             # It is faster to load the entire file for monthly or quarterly
             # considering average size of file
-            return self.process_monthly(file, self.end_date)
+            try:
+                return self.process_monthly(file, self.end_date)
+            except (IndexError, ValueError, KeyError, OSError) as e:
+                logger.warning(f"{symbol}: Error loading file - {e!r}")
+                return
 
         try:
             df = csv_loader(
