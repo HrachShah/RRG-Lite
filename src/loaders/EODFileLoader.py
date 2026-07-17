@@ -77,15 +77,15 @@ class EODFileLoader(AbstractLoader):
 
         self.chunk_size = 1024 * 6
 
-        if tf == self.default_tf:
+        if self.tf == self.default_tf:
             self.period = period
-        elif tf == "weekly":
+        elif self.tf == "weekly":
             self.period = 7 * period
             self.chunk_size = 1024 * 19
-        elif tf == "monthly":
+        elif self.tf == "monthly":
             days = 7 if self.default_tf == "weekly" else 1
             self.period = 30 * period // days
-        elif tf == "quarterly":
+        elif self.tf == "quarterly":
             self.period = 30 * 3 * period
 
     def get(self, symbol: str) -> Optional[pd.DataFrame]:
