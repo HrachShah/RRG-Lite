@@ -100,7 +100,7 @@ class EODFileLoader(AbstractLoader):
             # considering average size of file
             try:
                 return self.process_monthly(file, self.end_date)
-            except (IndexError, ValueError, KeyError, OSError) as e:
+            except (IndexError, ValueError, KeyError, TypeError, OSError) as e:
                 logger.warning(f"{symbol}: Error loading file - {e!r}")
                 return
 
