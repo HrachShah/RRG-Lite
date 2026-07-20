@@ -156,16 +156,7 @@ class EODFileLoader(AbstractLoader):
 
         weekday = date.weekday()
 
-        if weekday == 5:
-            # saturday
-            return date
-
-        remaining_days = 5 - weekday
-
-        if remaining_days == -1:
-            # its a sunday
-            remaining_days += 7
-
+        remaining_days = (5 - weekday) % 7
         return date + timedelta(remaining_days)
 
     def last_day_month(self, date: datetime) -> datetime:
