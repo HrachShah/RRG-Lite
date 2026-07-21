@@ -148,7 +148,7 @@ marker, and label
             short_name = None
 
             if "," in ticker:
-                ticker, short_name = ticker.split(",")
+                ticker, short_name = ticker.split(",", 1)
 
             if short_name is None:
                 short_name = ticker
