@@ -9,13 +9,34 @@ from pathlib import Path
 def load_config():
     config_path = Path(__file__).parent / "user.json"
 
-    if "-c" in sys.argv or "--config" in sys.argv:
-        idx = sys.argv.index("-c" if "-c" in sys.argv else "--config") + 1
+    config_arg = None
+    for arg in sys.argv[1:]:
+        if arg == "-c" or arg == "--config":
+            config_arg = ("next", arg)
+            break
+        if arg.startswith("-c=") or arg.startswith("--config="):
+            config_arg = ("equals", arg.split("=", 1)[1])
+            break
 
-        config_path = Path(sys.argv[idx]).expanduser().resolve()
+    if config_arg is not None:
+        if config_arg[0] == "equals":
+            config_path = Path(config_arg[1]).expanduser().resolve()
+        else:
+            try:
+                idx = sys.argv.index(config_arg[1]) + 1
+                config_path = Path(sys.argv[idx]).expanduser().resolve()
+            except (ValueError, IndexError):
+                exit("Missing value for --config option.")
 
     if config_path.exists():
-        return json.loads(config_path.read_bytes())
+        try:
+            config = json.loads(config_path.read_bytes())
+        except (json.JSONDecodeError, OSError) as exc:
+            raise SystemExit(f"Failed to read config file {config_path}: {exc}")
+        if not isinstance(config, dict):
+            raise SystemExit(f"Config file {config_path} must contain a JSON object.")
+        return config
+    return None
 
 
 def get_loader_class(config):
