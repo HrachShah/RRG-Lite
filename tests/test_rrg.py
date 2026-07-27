@@ -1,7 +1,10 @@
+import tempfile
 import unittest
+from pathlib import Path
 
 import pandas as pd
 
+from loaders.EODFileLoader import EODFileLoader
 from RRG import RRG
 
 
@@ -18,6 +21,16 @@ class TestMomentumBaseDate(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "BASE_DATE not found"):
             rrg._calculate_momentum(ratios)
+
+
+class TestMonthlyLoaderErrors(unittest.TestCase):
+    def test_malformed_monthly_csv_returns_no_data(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            symbol_csv = tmpdir / "symbol.csv"
+            symbol_csv.write_text("a,b\n1,2\n")
+            loader = EODFileLoader({"DATA_PATH": str(tmpdir)}, tf="monthly")
+            self.assertIsNone(loader.get("symbol"))
 
 
 if __name__ == "__main__":
