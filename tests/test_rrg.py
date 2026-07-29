@@ -23,6 +23,13 @@ class TestMomentumBaseDate(unittest.TestCase):
             rrg._calculate_momentum(ratios)
 
 
+class TestLoaderConfiguration(unittest.TestCase):
+    def test_non_positive_period_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.assertRaisesRegex(ValueError, "period must be greater than zero"):
+                EODFileLoader({"DATA_PATH": tmpdir}, period=0)
+
+
 class TestMonthlyLoaderErrors(unittest.TestCase):
     def test_malformed_monthly_csv_returns_no_data(self):
         with tempfile.TemporaryDirectory() as tmpdir:

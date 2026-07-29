@@ -65,6 +65,9 @@ class EODFileLoader(AbstractLoader):
             elif self.tf == "monthly":
                 self.end_date = self.last_day_month(end_date)
 
+        if period < 1:
+            raise ValueError("period must be greater than zero")
+
         self.data_path = Path(config["DATA_PATH"]).expanduser()
 
         self.ohlc_dict = dict(
