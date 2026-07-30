@@ -43,6 +43,12 @@ class RRG:
 
         self.window = config.get("WINDOW", 14)
         self.period = config.get("PERIOD", 52)
+
+        if self.window < 2:
+            raise ValueError("WINDOW must be at least 2")
+        if self.period < 1:
+            raise ValueError("PERIOD must be greater than zero")
+
         self.base_date = config.get("BASE_DATE")
         self.config = config
 
