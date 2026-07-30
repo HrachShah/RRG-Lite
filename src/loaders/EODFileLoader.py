@@ -124,13 +124,17 @@ class EODFileLoader(AbstractLoader):
 
         return df
 
-    def process_monthly(self, file, end_date) -> pd.DataFrame:
-        df = pd.read_csv(
-            file,
-            index_col="Date",
-            parse_dates=["Date"],
-            date_format=self.date_format,
-        )
+    def process_monthly(self, file, end_date) -> Optional[pd.DataFrame]:
+        try:
+            df = pd.read_csv(
+                file,
+                index_col="Date",
+                parse_dates=["Date"],
+                date_format=self.date_format,
+            )
+        except (OSError, ValueError, KeyError, pd.errors.ParserError) as exc:
+            logger.warning(f"{file}: Error reading CSV file - {exc!r}")
+            return None
 
         if end_date:
             df = df.loc[:end_date].iloc[-self.period :]
