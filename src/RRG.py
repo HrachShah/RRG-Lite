@@ -384,7 +384,12 @@ marker, and label
         """
 
         if self.base_date:
-            base_rs = rs_ratio.at[self.base_date]
+            try:
+                base_rs = rs_ratio.at[self.base_date]
+            except KeyError as exc:
+                raise ValueError(
+                    f"BASE_DATE {self.base_date!r} is not present in the calculated data"
+                ) from exc
         else:
             base_rs = rs_ratio.iloc[-self.period]
 
