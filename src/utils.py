@@ -12,7 +12,10 @@ def load_config():
     config_arg = next((arg for arg in sys.argv[1:] if arg in ("-c", "--config") or arg.startswith(("-c=", "--config="))), None)
     if config_arg:
         if "=" in config_arg:
-            config_path = Path(config_arg.split("=", 1)[1]).expanduser().resolve()
+            config_value = config_arg.split("=", 1)[1]
+            if not config_value:
+                raise SystemExit(f"Missing value for {config_arg.split('=', 1)[0]} option.")
+            config_path = Path(config_value).expanduser().resolve()
         else:
             try:
                 idx = sys.argv.index(config_arg) + 1
