@@ -43,6 +43,12 @@ class RRG:
 
         self.window = config.get("WINDOW", 14)
         self.period = config.get("PERIOD", 52)
+
+        if self.window < 2:
+            raise ValueError("WINDOW must be at least 2")
+        if self.period < 1:
+            raise ValueError("PERIOD must be greater than zero")
+
         self.base_date = config.get("BASE_DATE")
         self.config = config
 
@@ -148,7 +154,7 @@ marker, and label
             short_name = None
 
             if "," in ticker:
-                ticker, short_name = ticker.split(",")
+                ticker, short_name = ticker.split(",", 1)
 
             if short_name is None:
                 short_name = ticker
@@ -378,7 +384,12 @@ marker, and label
         """
 
         if self.base_date:
-            base_rs = rs_ratio.at[self.base_date]
+            try:
+                base_rs = rs_ratio.at[self.base_date]
+            except KeyError as exc:
+                raise ValueError(
+                    f"BASE_DATE {self.base_date!r} is not present in the calculated data"
+                ) from exc
         else:
             base_rs = rs_ratio.iloc[-self.period]
 
