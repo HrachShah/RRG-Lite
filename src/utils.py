@@ -19,9 +19,12 @@ def load_config():
         else:
             try:
                 idx = sys.argv.index(config_arg) + 1
-                config_path = Path(sys.argv[idx]).expanduser().resolve()
+                config_value = sys.argv[idx]
             except IndexError as exc:
                 raise SystemExit(f"Missing value for {config_arg} option.") from exc
+            if config_value.startswith("-"):
+                raise SystemExit(f"Missing value for {config_arg} option.")
+            config_path = Path(config_value).expanduser().resolve()
 
     if config_path.exists():
         return json.loads(config_path.read_bytes())
