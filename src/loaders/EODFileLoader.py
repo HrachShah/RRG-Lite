@@ -37,6 +37,7 @@ class EODFileLoader(AbstractLoader):
     ):
         # No need to close method to be called for this Class
         self.closed = True
+        self.output_period = period
 
         self.default_tf = str(config.get("DEFAULT_TF", "daily"))
 
@@ -133,11 +134,9 @@ class EODFileLoader(AbstractLoader):
         )
 
         if end_date:
-            df = df.loc[:end_date].iloc[-self.period :]
-        else:
-            df = df.iloc[-self.period :]
+            df = df.loc[:end_date]
 
-        df = df.resample(self.offset_str).agg(self.ohlc_dict).dropna()
+        df = df.resample(self.offset_str).agg(self.ohlc_dict).dropna().iloc[-self.output_period :]
 
         assert isinstance(df, pd.DataFrame)
 
