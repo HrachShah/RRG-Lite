@@ -44,6 +44,10 @@ class RRG:
         self.window = config.get("WINDOW", 14)
         self.period = config.get("PERIOD", 52)
 
+        if isinstance(self.window, bool) or not isinstance(self.window, int):
+            raise TypeError("WINDOW must be an integer")
+        if isinstance(self.period, bool) or not isinstance(self.period, int):
+            raise TypeError("PERIOD must be an integer")
         if self.window < 2:
             raise ValueError("WINDOW must be at least 2")
         if self.period < 1:
