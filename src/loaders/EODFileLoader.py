@@ -56,6 +56,9 @@ class EODFileLoader(AbstractLoader):
         self.tf = tf
         self.offset_str = self.timeframes[tf]
 
+        if period < 1:
+            raise ValueError("period must be at least 1")
+
         self.end_date = end_date
         self.date_format = config.get("DATE_FORMAT", None)
 
