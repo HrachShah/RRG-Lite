@@ -141,7 +141,11 @@ class EODFileLoader(AbstractLoader):
         else:
             df = df.iloc[-self.period :]
 
-        df = df.resample(self.offset_str).agg(self.ohlc_dict).dropna()
+        try:
+            df = df.resample(self.offset_str).agg(self.ohlc_dict).dropna()
+        except (KeyError, TypeError, ValueError) as exc:
+            logger.warning(f"{file}: Error resampling CSV data - {exc!r}")
+            return None
 
         assert isinstance(df, pd.DataFrame)
 
