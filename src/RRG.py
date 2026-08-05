@@ -38,8 +38,11 @@ class RRG:
                 "No benchmark index set. Use `-b` or specify `BENCHMARK` in config."
             )
 
-        # Tail count set to minimum 2
-        self.tail_count = max(2, tail_count)
+        if isinstance(tail_count, bool) or not isinstance(tail_count, int):
+            raise TypeError("tail_count must be an integer")
+        if tail_count < 2:
+            raise ValueError("tail_count must be at least 2")
+        self.tail_count = tail_count
 
         self.window = config.get("WINDOW", 14)
         self.period = config.get("PERIOD", 52)

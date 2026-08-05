@@ -10,8 +10,10 @@ def load_config():
     config_path = Path(__file__).parent / "user.json"
 
     if "-c" in sys.argv or "--config" in sys.argv:
-        idx = sys.argv.index("-c" if "-c" in sys.argv else "--config") + 1
-
+        option = "-c" if "-c" in sys.argv else "--config"
+        idx = sys.argv.index(option) + 1
+        if idx >= len(sys.argv):
+            raise ValueError(f"{option} requires a config file path")
         config_path = Path(sys.argv[idx]).expanduser().resolve()
 
     if config_path.exists():
