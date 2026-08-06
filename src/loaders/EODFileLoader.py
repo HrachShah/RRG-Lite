@@ -58,6 +58,9 @@ class EODFileLoader(AbstractLoader):
 
         self.end_date = end_date
         self.date_format = config.get("DATE_FORMAT", None)
+        if period < 1:
+            raise ValueError("period must be at least 1")
+
 
         if end_date:
             if self.tf == "weekly":
