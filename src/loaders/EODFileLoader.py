@@ -140,6 +140,9 @@ class EODFileLoader(AbstractLoader):
         if end_date:
             df = df.loc[:end_date]
 
+        if df.empty:
+            return df
+
         df = df.resample(self.offset_str).agg(self.ohlc_dict).dropna().iloc[-self.output_period :]
 
         assert isinstance(df, pd.DataFrame)

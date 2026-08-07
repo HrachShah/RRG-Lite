@@ -48,3 +48,20 @@ def test_monthly_loader_returns_none_for_malformed_csv(tmp_path):
     loader = EODFileLoader({"DATA_PATH": str(data_path)}, tf="monthly")
 
     assert loader.get("index") is None
+
+
+def test_monthly_loader_returns_empty_frame_for_header_only_csv(tmp_path):
+    from src.loaders.EODFileLoader import EODFileLoader
+
+    data_path = tmp_path / "data"
+    data_path.mkdir()
+    (data_path / "index.csv").write_text(
+        "Date,Open,High,Low,Close,Volume\n", encoding="utf-8"
+    )
+
+    loader = EODFileLoader({"DATA_PATH": str(data_path)}, tf="monthly")
+
+    result = loader.get("index")
+
+    assert result is not None
+    assert result.empty
