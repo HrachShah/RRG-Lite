@@ -139,6 +139,10 @@ class EODFileLoader(AbstractLoader):
             logger.warning(f"{file}: Error reading CSV file - {exc!r}")
             return None
 
+        if not isinstance(df.index, pd.DatetimeIndex):
+            logger.warning(f"{file}: Error reading CSV data - Date index is not datetime-like")
+            return None
+
         if end_date:
             df = df.loc[:end_date].iloc[-self.period :]
         else:
