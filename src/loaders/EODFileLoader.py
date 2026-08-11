@@ -144,6 +144,11 @@ class EODFileLoader(AbstractLoader):
             return None
 
         if end_date:
+            if df.index.tz is not None:
+                if end_date.tzinfo is None:
+                    end_date = end_date.replace(tzinfo=df.index.tz)
+                else:
+                    end_date = end_date.astimezone(df.index.tz)
             df = df.loc[:end_date].iloc[-self.period :]
         else:
             df = df.iloc[-self.period :]
