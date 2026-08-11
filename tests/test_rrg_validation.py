@@ -79,3 +79,26 @@ def test_monthly_loader_returns_empty_frame_for_header_only_csv(tmp_path):
 
     assert result is not None
     assert result.empty
+
+
+def test_daily_loader_does_not_hide_unexpected_loader_errors(tmp_path, monkeypatch):
+    import importlib
+
+    loader_module = importlib.import_module("src.loaders.EODFileLoader")
+    from src.loaders.EODFileLoader import EODFileLoader
+
+    data_path = tmp_path / "data"
+    data_path.mkdir()
+    (data_path / "index.csv").write_text(
+        "Date,Open,High,Low,Close,Volume\n2026-01-01,1,2,0,1,10\n",
+        encoding="utf-8",
+    )
+
+    def raise_unexpected_error(*args, **kwargs):
+        raise RuntimeError("unexpected parser state")
+
+    monkeypatch.setattr(loader_module, "csv_loader", raise_unexpected_error)
+    loader = EODFileLoader({"DATA_PATH": str(data_path)}, tf="daily")
+
+    with pytest.raises(RuntimeError, match="unexpected parser state"):
+        loader.get("index")

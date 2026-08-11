@@ -121,9 +121,14 @@ class EODFileLoader(AbstractLoader):
             )
         except IndexError:
             return
-        except Exception as e:
-            # Any other error log it with the symbol name
-            logger.warning(f"{symbol}: Error loading file - {e!r}")
+        except (
+            OSError,
+            KeyError,
+            ValueError,
+            UnicodeError,
+            pd.errors.ParserError,
+        ) as exc:
+            logger.warning(f"{symbol}: Error loading file - {exc!r}")
             return
 
         if self.tf == self.default_tf or df.empty:
